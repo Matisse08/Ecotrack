@@ -49,3 +49,7 @@ class StatResult(BaseModel):
     type: str
     average: float
     unit: str
+
+class UserUpdate(BaseModel):
+    role: Optional[str] = None
+    is_active: Optional[bool] = None
