@@ -16,7 +16,7 @@ class UserOut(UserBase):
     is_active: bool
 
     class Config:
-        from_attributes = True # Remplace orm_mode dans Pydantic V2
+        from_attributes = True 
 
 class Token(BaseModel):
     access_token: str
@@ -24,3 +24,28 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: Optional[str] = None
+
+# --- SCHÉMAS INDICATEURS & STATS ---
+
+class IndicatorBase(BaseModel):
+    type: str
+    value: float
+    unit: str
+    zone_id: int
+    timestamp: Optional[datetime] = None
+
+class IndicatorCreate(IndicatorBase):
+    pass
+
+class IndicatorOut(IndicatorBase):
+    id: int
+    timestamp: datetime
+
+    class Config:
+        from_attributes = True
+
+class StatResult(BaseModel):
+    zone: str
+    type: str
+    average: float
+    unit: str

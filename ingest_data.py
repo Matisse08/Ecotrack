@@ -7,9 +7,8 @@ from app import models
 # Initialisation de la BDD (crée les tables si elles n'existent pas encore)
 models.Base.metadata.create_all(bind=engine)
 
-# ==========================================
 # DOCUMENTATION DES SOURCES (Livrable PDF)
-# ==========================================
+
 # Source 1 : Open-Meteo
 # - URL : https://api.open-meteo.com/v1/forecast
 # - Type : Météo (Température)
@@ -24,7 +23,7 @@ models.Base.metadata.create_all(bind=engine)
 # - Format : JSON (OpenDataSoft)
 # - Fréquence : Temps réel (toutes les 15-30 min)
 # - Limitation : API publique, nécessite un filtrage précis par région.
-# ==========================================
+
 
 def get_or_create_zone(db: Session, name: str):
     """Récupère une zone par son nom ou la crée si elle n'existe pas."""
@@ -87,10 +86,10 @@ def ingest_weather_data(db: Session, zone_id: int, lat: float, lon: float):
                 count += 1
         
         db.commit()
-        print(f"✅ Succès Météo : {count} relevés ajoutés.")
+        print(f"Succès Météo : {count} relevés ajoutés.")
         
     except Exception as e:
-        print(f"❌ Erreur Météo : {e}")
+        print(f"Erreur Météo : {e}")
 
 def ingest_energy_data(db: Session, zone_id: int):
     """
@@ -149,10 +148,10 @@ def ingest_energy_data(db: Session, zone_id: int):
                 count += 1
         
         db.commit()
-        print(f"✅ Succès Énergie : {count} relevés ajoutés.")
+        print(f"Succès Énergie : {count} relevés ajoutés.")
 
     except Exception as e:
-        print(f"❌ Erreur Énergie : {e}")
+        print(f"Erreur Énergie : {e}")
 
 def main():
     db = SessionLocal()
