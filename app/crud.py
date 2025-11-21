@@ -88,3 +88,7 @@ def delete_indicator(db: Session, indicator_id: int):
         db.commit()
         return True
     return False
+
+class UserUpdate(BaseModel):
+    role: Optional[str] = None
+    is_active: Optional[bool] = None
