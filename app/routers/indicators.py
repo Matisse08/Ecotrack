@@ -20,9 +20,7 @@ def read_indicators(
     to_date: Optional[datetime] = None,
     db: Session = Depends(database.get_db)
 ):
-    """
-    Récupère la liste des indicateurs avec filtres optionnels.
-    """
+    """Récupère la liste des indicateurs avec filtres optionnels."""
     indicators = crud.get_indicators(
         db, skip=skip, limit=limit, 
         zone_id=zone_id, type=type, 
@@ -36,9 +34,7 @@ def read_indicator_stats(
     type: str,
     db: Session = Depends(database.get_db)
 ):
-    """
-    Retourne la moyenne d'un type d'indicateur pour une zone donnée.
-    """
+    """Retourne la moyenne d'un type d'indicateur pour une zone donnée."""
     stats = crud.get_indicator_stats(db, zone_id=zone_id, type=type)
     if not stats:
         raise HTTPException(status_code=404, detail="No data found for this zone and type")
@@ -50,15 +46,25 @@ def create_indicator(
     db: Session = Depends(database.get_db),
     current_user: models.User = Depends(deps.get_admin_user)
 ):
-    """
-    Crée un nouvel indicateur (Admin seulement).
-    """
-    # Vérification existence zone (optionnel mais recommandé)
+    """Crée un nouvel indicateur (Admin seulement)."""
     zone = db.query(models.Zone).filter(models.Zone.id == indicator.zone_id).first()
     if not zone:
         raise HTTPException(status_code=404, detail="Zone not found")
         
     return crud.create_indicator(db=db, indicator=indicator)
+
+@router.put("/{indicator_id}", response_model=schemas.IndicatorOut)
+def update_indicator(
+    indicator_id: int,
+    indicator: schemas.IndicatorUpdate,
+    db: Session = Depends(database.get_db),
+    current_user: models.User = Depends(deps.get_admin_user)
+):
+    """Met à jour un indicateur (Admin seulement)."""
+    updated_indicator = crud.update_indicator(db, indicator_id, indicator)
+    if not updated_indicator:
+        raise HTTPException(status_code=404, detail="Indicator not found")
+    return updated_indicator
 
 @router.delete("/{indicator_id}")
 def delete_indicator(
@@ -66,9 +72,7 @@ def delete_indicator(
     db: Session = Depends(database.get_db),
     current_user: models.User = Depends(deps.get_admin_user)
 ):
-    """
-    Supprime un indicateur par son ID (Admin seulement).
-    """
+    """Supprime un indicateur par son ID (Admin seulement)."""
     success = crud.delete_indicator(db, indicator_id)
     if not success:
         raise HTTPException(status_code=404, detail="Indicator not found")
