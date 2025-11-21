@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime
 
 # --- SCHÉMAS UTILISATEURS & AUTH ---
@@ -9,6 +9,10 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
+
+class UserUpdate(BaseModel):
+    role: Optional[str] = None
+    is_active: Optional[bool] = None
 
 class UserOut(UserBase):
     id: int
@@ -25,6 +29,26 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     email: Optional[str] = None
 
+# --- SCHÉMAS ZONES ---
+
+class ZoneBase(BaseModel):
+    name: str
+    postal_code: Optional[str] = None
+    country: str = "France"
+
+class ZoneCreate(ZoneBase):
+    pass
+
+class ZoneUpdate(BaseModel):
+    name: Optional[str] = None
+    postal_code: Optional[str] = None
+    country: Optional[str] = None
+
+class ZoneOut(ZoneBase):
+    id: int
+    class Config:
+        from_attributes = True
+
 # --- SCHÉMAS INDICATEURS & STATS ---
 
 class IndicatorBase(BaseModel):
@@ -36,6 +60,12 @@ class IndicatorBase(BaseModel):
 
 class IndicatorCreate(IndicatorBase):
     pass
+
+class IndicatorUpdate(BaseModel):
+    type: Optional[str] = None
+    value: Optional[float] = None
+    unit: Optional[str] = None
+    zone_id: Optional[int] = None
 
 class IndicatorOut(IndicatorBase):
     id: int
@@ -49,7 +79,3 @@ class StatResult(BaseModel):
     type: str
     average: float
     unit: str
-
-class UserUpdate(BaseModel):
-    role: Optional[str] = None
-    is_active: Optional[bool] = None
