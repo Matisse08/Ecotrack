@@ -1,149 +1,80 @@
-EcoTrack API 🌱
+Projet API - EcoTrack
+Ce projet a été réalisé dans le cadre du cours de développement d'API. L'objectif est de concevoir une API RESTful complète avec FastAPI permettant d'agréger et d'analyser des indicateurs environnementaux locaux.
+L'application respecte une architecture modulaire, intègre une base de données relationnelle via SQLAlchemy, une authentification sécurisée par JWT, et consomme des données externes réelles.
+Architecture et Choix Techniques
+Le projet est structuré selon les bonnes pratiques d'ingénierie logicielle vues en cours :
+• Langage : Python 3.10+
+• Framework API : FastAPI
+• Base de données : SQLite (pour la portabilité) avec SQLAlchemy (ORM)
+• Validation : Pydantic
+• Sécurité : Authentification OAuth2 avec Tokens JWT (JSON Web Tokens) et hachage des mots de passe (Bcrypt)
+• Tests : Tests d'intégration via Pytest et TestClient
+Documentation des Données (Livrable)
+Conformément au cahier des charges, l'application intègre deux sources de données externes distinctes. Le script d'ingestion (ingest_data.py) se charge de peupler la base de données initialement.
+Source 1 : Données Météorologiques
+• Nom : Open-Meteo API
+• URL : https://api.open-meteo.com/v1/forecast
+• Type de donnée : Température à 2 mètres du sol.
+• Format : JSON.
+• Fréquence : Horaire (récupération de l'historique sur 7 jours glissants).
+• Limitations et contraintes : L'API est gratuite pour un usage non commercial (< 10 000 requêtes/jour). Elle ne nécessite pas de clé API. Les données dépendent de la latitude/longitude fournie.
+Source 2 : Données Énergétiques
+• Nom : ODRÉ (Open Data Réseaux Énergies - RTE)
+• URL : https://odre.opendatasoft.com/api/records/1.0/search/
+• Dataset : eco2mix-regional-tr (Consommation d'électricité en temps réel).
+• Type de donnée : Consommation électrique globale (en MW).
+• Format : JSON (Standard OpenDataSoft).
+• Fréquence : Temps réel (mise à jour toutes les 15 à 30 minutes).
+• Limitations et contraintes : API publique gouvernementale. Le filtrage s'effectue par région administrative ("Île-de-France") et non par coordonnées GPS précises.
 
-EcoTrack est une application backend complète développée avec FastAPI. Elle permet de collecter, stocker, analyser et visualiser des indicateurs environnementaux (Météo et Consommation Énergétique) pour la zone de Paris / Île-de-France.
+Installation et Configuration
 
-Ce projet a été réalisé dans le cadre du cours de développement API.
+Clonage du dépôt
+Récupérez les sources du projet sur votre machine locale.
 
-🚀 Fonctionnalités Clés
+Configuration de l'environnement virtuel
+Il est recommandé d'utiliser un environnement virtuel pour isoler les dépendances.
 
-API RESTful performante avec FastAPI.
-
-Base de Données SQLite gérée via l'ORM SQLAlchemy.
-
-Authentification Sécurisée par tokens JWT (JSON Web Tokens).
-
-Gestion des Rôles : Distinction entre user (lecture seule) et admin (écriture/suppression).
-
-Ingestion Automatisée (ETL) : Script Python récupérant des données réelles depuis des APIs externes.
-
-Dashboard Interactif : Interface web (HTML/JS/Chart.js) pour visualiser les données sous forme de courbes et tableaux.
-
-📂 Structure du Projet
-
-ecotrack/
-├── ingest_data.py          # Script ETL (Extraction & Chargement des données externes)
-├── ecotrack.db             # Base de données SQLite (générée automatiquement)
-├── requirements.txt        # Liste des dépendances Python
-├── app/
-│   ├── main.py             # Point d'entrée de l'application
-│   ├── models.py           # Modèles de Base de Données (User, Zone, Indicator)
-│   ├── schemas.py          # Schémas de validation Pydantic
-│   ├── crud.py             # Logique métier (Lecture/Écriture BDD)
-│   ├── utils.py            # Utilitaires de sécurité (Hashage, JWT)
-│   └── routers/
-│       ├── auth.py         # Routes d'inscription et connexion
-│       ├── indicators.py   # Routes API pour les données (Filtres, Stats)
-│       └── dashboard.py    # Route servant l'interface graphique
-
-
-📊 Sources de Données Externes
-
-Conformément au cahier des charges, ce projet intègre deux sources de données distinctes et fiables :
-
-Source
-
-Type de Donnée
-
-Format
-
-Fréquence
-
-Description
-
-1. Open-Meteo
-
-Météo (Température)
-
-JSON
-
-Horaire
-
-Historique des températures sur les 7 derniers jours pour Paris.
-
-2. ODRÉ (RTE)
-
-Énergie (Consommation)
-
-JSON
-
-Temps réel (15-30 min)
-
-Données du Réseau de Transport d'Électricité (RTE) filtrées sur la région Île-de-France.
-
-🛠️ Installation et Démarrage
-
-1. Prérequis
-
-Python 3.10 ou supérieur.
-
-Git.
-
-2. Installation
-
-Clonez le projet et installez les dépendances :
-
-# Cloner le dépôt
-git clone [https://github.com/VOTRE_NOM/ecotrack.git](https://github.com/VOTRE_NOM/ecotrack.git)
-cd ecotrack
-
-# Créer un environnement virtuel
 python -m venv venv
-
-# Activer l'environnement (Windows)
-.\venv\Scripts\Activate
-# OU Activer l'environnement (Mac/Linux)
+# Activation sous Windows :
+venv\Scripts\activate
+# Activation sous Mac/Linux :
 source venv/bin/activate
 
-# Installer les librairies
+Installation des dépendances
+
 pip install -r requirements.txt
 
-
-3. Initialisation des Données (ETL)
-
-Lancez le script d'ingestion pour créer la base de données et la remplir avec les données réelles :
+Initialisation de la Base de Données
+Un script ETL (Extract, Transform, Load) a été développé pour initialiser la base de données avec des données réelles provenant des deux sources citées plus haut.
+Exécutez la commande suivante à la racine du projet :
 
 python ingest_data.py
 
-
-Vous devriez voir des messages de succès indiquant l'ajout des relevés Météo et Énergie.
-
-4. Lancer le Serveur
+Si l'exécution est un succès, le script confirmera l'ajout des relevés météorologiques et énergétiques dans le fichier ecotrack.db.
+Lancement de l'Application
+Pour démarrer le serveur de développement Uvicorn :
 
 uvicorn app.main:app --reload
 
+L'API sera accessible à l'adresse : http://127.0.0.1:8000
+Accès aux fonctionnalités
+1. Documentation API (Swagger UI)
+• Adresse : http://127.0.0.1:8000/docs
+• Permet de tester tous les endpoints (Inscription, Connexion, CRUD Indicateurs).
+2. Tableau de Bord (Dashboard)
+• Adresse : http://127.0.0.1:8000/dashboard
+• Interface graphique permettant de visualiser les données sous forme de tableau et de graphique, de filtrer par zone/type, et pour les administrateurs, d'ajouter ou supprimer des données.
+Tests et Qualité
+Des tests d'intégration ont été mis en place pour assurer la robustesse des routes principales (authentification, protection des routes, récupération des données).
+Pour lancer la suite de tests :
 
-Le serveur est accessible sur : http://127.0.0.1:8000
-
-🖥️ Utilisation
-
-Interface Graphique (Dashboard)
-
-Accédez à http://127.0.0.1:8000/dashboard.
-
-Connectez-vous (ou créez un compte via l'API).
-
-Visualisez les courbes de température et de consommation.
-
-Filtrez par type de donnée.
-
-Documentation API (Swagger UI)
-
-Accédez à http://127.0.0.1:8000/docs.
-
-Testez tous les endpoints directement depuis le navigateur.
-
-Utilisez /auth/register pour créer un utilisateur.
-
-Utilisez le bouton "Authorize" (cadenas vert) pour vous authentifier avec le token reçu.
+python -m pytest
 
 Gestion des Rôles
+L'application gère deux niveaux de droits :
+• Utilisateur (user) : Peut consulter les indicateurs, utiliser les filtres et voir les statistiques.
+• Administrateur (admin) : Dispose des droits de l'utilisateur, plus la capacité d'ajouter manuellement des indicateurs (POST) et de supprimer des relevés (DELETE).
+Note : Lors de l'inscription via l'API, le rôle par défaut est "user".
 
-User : Peut consulter le Dashboard, lister les indicateurs et voir les statistiques.
-
-Admin : Peut ajouter manuellement des données et supprimer des indicateurs erronés via le Dashboard ou l'API.
-
-Note : Pour passer un utilisateur en Admin, modifiez la colonne role directement en base de données pour ce TP.
-
-Auteur
-
-Projet réalisé par Matisse Marchand.
+Auteur : Matisse Marchand
